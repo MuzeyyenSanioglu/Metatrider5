@@ -10,6 +10,7 @@ namespace Metatrider5.Application.Settings
     public class MT5ConnectionSettings : IMT5ConnectionSettings
     {
         public string Host { get; set; } = null!;
+        public string BaseURL { get; set; } = null!;
         public int Port { get; set; }
     }
 }

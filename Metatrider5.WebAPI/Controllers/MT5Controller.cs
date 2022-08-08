@@ -2,6 +2,7 @@
 using Metatrider5.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using mtapi.mt5;
+using Newtonsoft.Json.Linq;
 
 namespace Metatrider5.WebAPI.Controllers
 {
@@ -13,11 +14,21 @@ namespace Metatrider5.WebAPI.Controllers
         {
             _mt5Service = mt5Service;
         }
+
         [HttpGet("GetAPIKey")]
-        public ActionResult<Result<MT5API>> GetAPIKey(ulong username , string password)
+        public ActionResult<Result<string>> GetAPIKey(ulong username, string password)
         {
-            Result<MT5API> result = _mt5Service.Connect(username,password);
+            Result<string> result = _mt5Service.GetApiKey(username, password);
             return result;
-        } 
+        }
+        [HttpGet("GetOrders")]
+        public ActionResult<Result<List<OrderModel>>> GetOrders(string apiKey)
+        {
+
+            Result<List<OrderModel>> result = _mt5Service.GetOpenedOrders(apiKey);
+         
+            return result;
+        }
+
     }
 }

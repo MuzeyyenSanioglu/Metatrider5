@@ -1,7 +1,9 @@
-﻿using Metatrider5.Application.Model;
+﻿using Metatrider5.Application.Helper;
+using Metatrider5.Application.Model;
 using Metatrider5.Application.Services.Interfaces;
 using Metatrider5.Application.Settings.Interfaces;
 using mtapi.mt5;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,20 +42,29 @@ namespace Metatrider5.Application.Services
             return result;  
         }
 
+        public Result<string> GetApiKey(ulong usercode, string password)
+        {
+            string url = $"{_mt5CollectionSettings.BaseURL}/Connect?user={usercode}&password={password}&host={_mt5CollectionSettings.Host}&port={_mt5CollectionSettings.Port}";
+            Result<string> apıkeyResponse = HttpRequestBuilder.GetInstance(url).Get().SendAsync<string>().Result;
+            return apıkeyResponse;
+        }
+
         public Result CreateOrder(Order order)
         {
             throw new NotImplementedException();
         }
 
 
-        public Result<List<Order>> GetOpenedOrders(MT5API api)
+        public Result<List<OrderModel>> GetOpenedOrders(string apiKey)
         {
-             Result<List<Order>> result = new Result<List<Order>>();
+             Result<List<OrderModel>> result = new Result<List<OrderModel>>();
             try
             {
-               
-                List<Order> orders =    api.GetOpenedOrders().ToList();
-                result.SetData(orders);
+                ///OpenedOrders?id=029ae670-35d2-4365-9e34-d1c1e10ecd84
+                string url  = $"{_mt5CollectionSettings.BaseURL}/OpenedOrders?id={apiKey}";
+                Result<List<OrderModel>> orders = HttpRequestBuilder.GetInstance(url).Get().SendAsync<List<OrderModel>>().Result;
+
+                result.SetData(orders.Data);
             }
             catch (Exception ex)
             {
