@@ -14,7 +14,9 @@ namespace Metatrider5.Application.Services.Interfaces
         Result<MT5API> Connect(ulong usercode, string password);
         Result<string> GetApiKey(ulong usercode, string password);
         Result<List<OrderModel>> GetOpenedOrders(string apiKey);
-        Result CreateOrder(Order order);
+        Result<OrderModel> CreateOrder(string apiKey, string symbol, string operation, int volume, double? price,
+           int? slippage, double? stoploss, double? takeProfit, string? comment);
+        Result<DemoAccountModel> GetDemoAccount();
 
     }
 }

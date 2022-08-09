@@ -49,9 +49,32 @@ namespace Metatrider5.Application.Services
             return apıkeyResponse;
         }
 
-        public Result CreateOrder(Order order)
+        public Result<OrderModel> CreateOrder(string apiKey ,string symbol , string operation,int volume,double? price,
+           int? slippage, double? stoploss , double? takeProfit  ,string? comment )
         {
-            throw new NotImplementedException();
+            Result<OrderModel> result = new Result<OrderModel>();
+            //http://mt5.mtapi.be/OrderSend?id=029ae670-35d2-4365-9e34-d1c1e10ecd84&symbol=USDJPY&operation=Sell&volume=1&slippage=1&stoploss=0&takeprofit=0
+            try
+            {
+                string url = $"{_mt5CollectionSettings.BaseURL}/OrderSend?id={apiKey}&symbol={symbol}&operation={operation}&volume={volume}";
+                if (price != null)
+                    url += $"&price={price}";
+                if (slippage != null)
+                    url += $"&slippage={slippage}";
+                if (stoploss != null)
+                    url += $"&stoploss={stoploss}";
+                if (takeProfit != null)
+                    url += $"&takeprofit={takeProfit}";
+                if (comment != null)
+                    url += $"&comment={comment}";
+                Result<OrderModel> order = HttpRequestBuilder.GetInstance(url).Get().SendAsync<OrderModel>().Result;
+                return order;
+            }
+            catch (Exception ex )
+            {
+                result.SetFailure(ex);
+            }
+            return result;
         }
 
 
@@ -69,6 +92,22 @@ namespace Metatrider5.Application.Services
             catch (Exception ex)
             {
 
+                result.SetFailure(ex);
+            }
+            return result;
+        }
+
+        public Result<DemoAccountModel> GetDemoAccount()
+        {
+            Result<DemoAccountModel> result = new Result<DemoAccountModel>();
+            try
+            {
+                string url = $"{_mt5CollectionSettings.BaseURL}/GetDemo?host={_mt5CollectionSettings.Host}&port={_mt5CollectionSettings.Port}";
+                Result<DemoAccountModel> account = HttpRequestBuilder.GetInstance(url).Get().SendAsync<DemoAccountModel>().Result;
+                return account;
+            }
+            catch (Exception ex)
+            {
                 result.SetFailure(ex);
             }
             return result;
